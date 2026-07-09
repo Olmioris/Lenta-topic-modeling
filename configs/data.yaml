@@ -1,1 +1,19 @@
+dataset:
+  name: "lenta-ru-news"
+  source: "kagglehub"
+  download_path: "data/raw/lenta-ru-news.csv.gz"
+  processed_path: "data/processed/lenta_50k_clean.csv"
+  sample_size: 50000
+  random_state: 42
 
+preprocessing:
+  remove_extra_spaces: true
+  strip_text: true
+  min_text_length: 1
+  lowercase: false
+  remove_stopwords: false
+  language: "ru"
+
+output:
+  save_clean_csv: true
+  save_zip: false
