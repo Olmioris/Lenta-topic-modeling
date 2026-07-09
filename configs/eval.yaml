@@ -1,1 +1,20 @@
+# Evaluation configuration for the Lenta Topic Modeling project
 
+topic_diversity:
+  top_k: 10        # number of top words used to compute diversity
+
+umass_coherence:
+  sample_size: 2000   # number of documents used for UMass calculation
+  top_k: 10           # number of top words per topic
+  dictionary_min_freq: 1   # minimum frequency for dictionary tokens
+
+report:
+  save_report: true
+  report_path: "reports/report.md"
+
+figures:
+  save_figures: true
+  output_dir: "reports/figures"
+  docs_2d_filename: "docs_2d.html"
+  topic_tokens_filename: "topic_tokens.png"
+  distributions_filename: "topic_distributions.html"
