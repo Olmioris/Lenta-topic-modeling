@@ -1,12 +1,14 @@
 import argparse
 import yaml
 import os
-
 import pandas as pd
-from bertopic import BERTopic
+
 from sklearn.feature_extraction.text import CountVectorizer
 from umap import UMAP
 from hdbscan import HDBSCAN
+from bertopic import BERTopic
+
+from src.data.download_lenta import download_lenta_kaggle, load_lenta_records
 
 
 def load_yaml(path: str):
@@ -20,10 +22,29 @@ def load_and_preprocess_data(data_cfg: dict) -> pd.DataFrame:
     sample_size = data_cfg["dataset"]["sample_size"]
     random_state = data_cfg["dataset"]["random_state"]
 
-    
-    df = pd.read_csv(processed_path)
+    # 1. Download raw data if not exists
+    if not os.path.exists(raw_path):
+        print("Downloading Lenta.ru dataset from Kaggle...")
+        gz_path = download_lenta_kaggle(raw_path)
+    else:
+        gz_path = raw_path
 
-    
+    # 2. Load records using Corus
+    print("Loading records...")
+    records = load_lenta_records(gz_path)
+
+    # 3. Convert to DataFrame
+    data = []
+    for record in records:
+        data.append({
+            "title": record.title,
+            "text": record.text,
+            "topic": record.topic,
+        })
+
+    df = pd.DataFrame(data)
+
+    # 4. Preprocessing
     if data_cfg["preprocessing"]["remove_extra_spaces"]:
         df["text"] = (
             df["text"]
@@ -33,8 +54,15 @@ def load_and_preprocess_data(data_cfg: dict) -> pd.DataFrame:
         )
 
     df = df[df["text"].str.len() >= data_cfg["preprocessing"]["min_text_length"]]
+
+    # 5. Sampling
     df = df.sample(sample_size, random_state=random_state).reset_index(drop=True)
 
+    # 6. Save processed CSV
+    os.makedirs(os.path.dirname(processed_path), exist_ok=True)
+    df.to_csv(processed_path, index=False)
+
+    print(f"Processed dataset saved to {processed_path}")
     return df
 
 
@@ -94,23 +122,26 @@ def main():
     topic_model = build_bertopic_model(model_cfg)
 
     # Train model
+    print("Training BERTopic model...")
     topics, probs = topic_model.fit_transform(texts)
 
     # Save model and embeddings
     output_cfg = model_cfg["output"]
+
     if output_cfg["save_model"]:
         os.makedirs(output_cfg["model_path"], exist_ok=True)
         topic_model.save(output_cfg["model_path"])
+        print(f"Model saved to {output_cfg['model_path']}")
 
     if output_cfg["save_embeddings"]:
         import numpy as np
-
         embeddings = topic_model._extract_embeddings(texts)
         os.makedirs(os.path.dirname(output_cfg["embeddings_path"]), exist_ok=True)
         np.save(output_cfg["embeddings_path"], embeddings)
+        print(f"Embeddings saved to {output_cfg['embeddings_path']}")
 
     print("Training completed.")
-    print(f"Number of topics: {len(set(topics))}")
+    print(f"Number of topics discovered: {len(set(topics))}")
 
 
 if __name__ == "__main__":
