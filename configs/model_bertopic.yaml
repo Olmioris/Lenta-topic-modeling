@@ -1,1 +1,43 @@
+# BERTopic model configuration for the Lenta Topic Modeling project
 
+embedding:
+  model_name: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  batch_size: 32
+  device: "cuda"   # fallback to CPU if GPU is unavailable
+
+vectorizer:
+  ngram_range: [1, 1]
+  min_df: 20
+  max_df: 0.4
+  stop_words: null   # can be "russian" or a custom stopword list
+
+umap:
+  n_neighbors: 15
+  n_components: 5
+  min_dist: 0.0
+  metric: "cosine"
+  random_state: 42
+
+hdbscan:
+  min_cluster_size: 30
+  min_samples: 10
+  metric: "euclidean"
+  cluster_selection_method: "eom"
+  prediction_data: true
+
+bertopic:
+  language: "multilingual"
+  calculate_probabilities: true
+  low_memory: true
+  nr_topics: null     # optional topic reduction step
+
+postprocessing:
+  top_n_words: 10
+  diversity: 0.5       # MMR diversity parameter
+  use_mmr: false       # enable Maximal Marginal Relevance
+
+output:
+  save_model: true
+  model_path: "models/bertopic_model"
+  save_embeddings: true
+  embeddings_path: "models/embeddings.npy"
