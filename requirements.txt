@@ -1,0 +1,29 @@
+# Core BERTopic dependencies
+bertopic[all]
+
+# Multilingual sentence embeddings
+sentence-transformers
+
+# Dimensionality reduction
+umap-learn
+
+# Clustering
+hdbscan
+
+# Numerical & data processing
+numpy
+pandas
+scikit-learn
+
+# Topic coherence metrics
+gensim
+
+# Visualizations
+plotly
+
+# Data loading (KaggleHub + Corus)
+kagglehub
+corus
+
+# Reproducibility (random seeds)
+torch
