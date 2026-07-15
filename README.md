@@ -190,3 +190,18 @@ For BERTopic, more reliable indicators are:
 - **visual separability of topics**.
 
 Together, these indicators confirm that the model produced high-quality and interpretable topics.
+
+*** SQL Data Exploration in DBeaver ***
+
+This section demonstrates how the processed dataset lenta_small.db was explored using SQL queries in DBeaver.
+
+The analysis includes:
+
+ - Basic data preview
+
+ - Topic frequency analysis
+
+ - Average text length by topic
+
+All queries were executed in DBeaver connected to the SQLite database.
+See detailed screenshots and discussion in Issue #2.
